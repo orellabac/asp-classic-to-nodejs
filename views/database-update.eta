@@ -1,0 +1,230 @@
+<%~ includeFile('./models/country', it) %>
+<%
+  /* --------------------------------------------------------
+                       VBSCRIPT PART 
+     --------------------------------------------------------*/
+
+  var currentURL;
+  currentURL = Request.ServerVariables("URL");
+
+  /* ------------------- FORM VALIDATION ------------------ */
+  var seq, title, content, status, submit, statusOptions, statusOption;
+  var titleMessage, contentMessage, statusMessage, submitMessage;
+  seq = Request.QueryString("seq");
+  title = Request.Form("title");
+  content = Request.Form("content");
+  status = Request.Form("status");
+  submit = Request.Form("submit");
+  statusOptions = Array("published", "draft");
+  /* ------------------ DATABASE PREPARATION -------------------
+   declare the variables*/
+  var connection, recordsetList, recordsetSingle;
+  /* to setup connectionString follow this tutorial https://stackoverflow.com/a/5678835/1843755
+   create an instance of ADO connection and recordsetList objects*/
+  connection = Server.CreateObject("ADODB.Connection");
+  connection.ConnectionString = Application("connectionString");
+
+  /* ------------------ UPDATE OR READ TO DATABASE ------------------- */
+  var selectedPost;
+  if (!IsEmpty(submit)) {
+    /* update or delete post*/
+    connection.Open();
+    if (submit == "Restore") {
+      seq = Request.Form("seq");
+      recordsetList = connection.Execute("UPDATE tb_posts SET deleted='N' WHERE seq = '" + seq  + "';");
+      submitMessage = "restore post success";
+    }
+    else if (submit == "Delete") {
+      seq = Request.Form("seq")
+      Set recordsetList = connection.Execute("UPDATE tb_posts SET deleted='Y' WHERE seq = '"+ seq +"';")
+      submitMessage = "delete post success"
+    }
+    else if (submit == "Update") {
+      
+      if (title=="") {
+        titleMessage = "Please write down the title";
+      }
+
+      if (content=="") {
+        contentMessage = "Please write down the content"
+      }
+
+      selectedPost = new page.export.Post();
+      selectedPost.Seq = seq;
+      selectedPost.Title = title;
+      selectedPost.Content = content;
+      selectedPost.Status = status;
+
+      if (title != "" && content != "" && status != "") {
+        seq = Request.Form("seq");
+        recordsetList = connection.Execute("UPDATE tb_posts SET title='"+ title +"', content='"+ content +"', status='"+ status +"' WHERE seq = '"+ seq +"';")
+        submitMessage = "update post success";
+      }
+    }
+    connection.Close();
+  }
+  else if (!IsEmpty(seq)) {
+    /* select post*/
+    connection.Open();
+    recordsetSingle = connection.Execute("SELECT * FROM tb_posts WHERE seq="+seq);
+    selectedPost = new page.exports.Post();
+    selectedPost.Seq = recordsetSingle.Fields("seq").value;
+    selectedPost.Title = recordsetSingle.Fields("title").value;
+    selectedPost.Content = recordsetSingle.Fields("content").value;
+    selectedPost.Status = recordsetSingle.Fields("status").value;
+    connection.Close();
+  }
+
+  /* --------------------- READ DATABASE --------------------*/
+  var posts, deletedPosts;
+  posts = Server.CreateObject("Scripting.Dictionary");
+  deletedPosts = Server.CreateObject("Scripting.Dictionary");
+  
+  /* open connection in the database*/
+  connection.Open();
+  
+  var myPost;
+  recordsetList = connection.Execute("SELECT * FROM tb_posts WHERE deleted='N'");
+  while(!recordsetList.EOF) {
+    myPost = new page.exports.Post();
+    myPost.Seq = recordsetList.Fields("seq").value;
+    myPost.Title = recordsetList.Fields("title").value;
+    myPost.Content = recordsetList.Fields("content").value;
+    myPost.Status = recordsetList.Fields("status").value;
+    posts.add(myPost.Seq, myPost);
+    recordsetList.MoveNext();
+  }
+
+  recordsetList = connection.Execute("SELECT * FROM tb_posts WHERE deleted='Y'");
+  while(!recordsetList.EOF) {
+    myPost = new page.exports.Post();
+    myPost.Seq = recordsetList.Fields("seq").value;
+    myPost.Title = recordsetList.Fields("title").value;
+    myPost.Content = recordsetList.Fields("content").value;
+    myPost.Status = recordsetList.Fields("status").value;
+    deletedPosts.add(myPost.Seq, myPost);
+    recordsetList.MoveNext();
+  }
+  connection.Close();
+%>
+
+<%
+  /* --------------------------------------------------------
+                       HTML PART 
+   --------------------------------------------------------*/
+%>
+<%~ includeFile('./layouts/header', it) %>
+  <style>
+    .form-update{
+      width:50%;
+    }
+    .col-action{
+      width: 75px;
+    }
+    .form-delete{
+      display: inline-block;
+    }
+  </style>
+
+  <h1 class="uk-title">Database Update</h1>
+
+  <% 
+    if (!IsEmpty(selectedPost)) { 
+    %>
+  <h3 class="uk-title">Update Post</h3>
+  <form class="uk-form-stacked form-update" method="POST" action="database-update.asp?seq=<%= seq %>">
+    <div>
+      <label class="uk-form-label">Name</label>
+      <div class="uk-form-controls">
+        <input class="uk-input" type="text" name="title" value="<%= selectedPost.Title %>" />
+        <i class="uk-text-danger"><%= titleMessage %></i>
+      </div>
+    </div>
+    <div>
+      <label class="uk-form-label">Content</label>
+      <div class="uk-form-controls">
+        <textarea class="uk-textarea" type="text" name="content"><%= selectedPost.Content %></textarea>
+        <i class="uk-text-danger"><%= contentMessage %></i>
+      </div>
+    </div>
+    <div>
+      <label class="uk-form-label">Status</label>
+      <div class="uk-form-controls">
+      <% for(statusOption in statusOptions) {%>
+        <% if (statusOption == selectedPost.Status) { %>
+        <label><input class="uk-radio" type="radio" name="status" value="<%= statusOption %>" checked> <%= statusOption %></label><br>
+        <% } else { %>
+        <label><input class="uk-radio" type="radio" name="status" value="<%= statusOption %>"> <%= statusOption %></label><br>
+        <% } %>
+      <% } %>
+      </div>
+    </div>
+    <div class="uk-margin">
+      <input type="hidden" name="seq" value="<%= selectedPost.Seq %>" />
+      <input type="submit" name="submit" class="uk-button uk-button-primary" value="Update" > 
+      <a href="<%= currentURL %>" class="uk-button uk-button-secondary">Cancel</a>
+        <i class="uk-text-success"><%= submitMessage %></i>
+    </div>
+  </form>
+  <% } %>
+
+  <div uk-grid>
+    <div class="uk-width-2-3">
+      <h3 class="uk-title">List of Posts</h3>
+      <table class="uk-table uk-table-divider">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Content</th>
+            <th>Status</th>
+            <th class="col-action"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% for(var item in posts.Items()) { %> 
+          <tr>
+            <% itemURL = currentURL&"?seq="&item.Seq %>
+            <td><a href="<%= itemURL %>"><%= item.Title %></a></td>
+            <td><%= item.Content %></td>
+            <td><%= item.Status %></td>
+            <td>
+              <a href="<%= itemURL %>" class="uk-icon-link" uk-icon="icon: file-edit" title="edit post" uk-tooltip></a>
+              <form class="form-delete" method="POST" action="<%= itemURL %>">
+                <input type="hidden" name="seq" value="<%= item.Seq %>" />
+                <input type="hidden" name="submit" value="Delete"> 
+                <button class="uk-icon-link" uk-icon="icon: close" title="delete post" uk-tooltip></button>
+              </form>
+            </td>
+          </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+    <div class="uk-width-1-3">
+      <h3 class="uk-title">Deleted Posts</h3>
+      <table class="uk-table uk-table-divider">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th class="col-action"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% for(item in deletedPosts) { %> 
+          <tr>
+            <% itemURL = currentURL + "?seq=" + item.Seq %>
+            <td><a href="<%= itemURL %>"><%= item.Title %></a></td>
+            <td>
+              <form class="form-delete" method="POST" action="<%= itemURL %>">
+                <input type="hidden" name="seq" value="<%= item.Seq %>" />
+                <input type="hidden" name="submit" value="Restore" > 
+                <button class="uk-icon-link" uk-icon="icon: refresh" title="restore post" uk-tooltip></button>
+              </form>
+            </td>
+          </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+<%~ includeFile('./layouts/footer', it) %>

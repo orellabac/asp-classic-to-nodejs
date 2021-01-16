@@ -1,0 +1,70 @@
+<%~ includeFile('./models/country', it) %>
+<%
+  /* --------------------------------------------------------
+                       VBSCRIPT PART 
+   --------------------------------------------------------
+   declare the variables */
+  var connection, recordset, sql, connectionString;
+  var countries;
+  /* to setup connectionString follow this tutorial https://stackoverflow.com/a/5678835/1843755 */
+  connectionString = Application["connectionString"];
+
+  /* create an instance of ADO connection and recordset objects */
+  var connection = Server.CreateObject("ADODB.Connection");
+  var countries = Server.CreateObject("Scripting.Dictionary");
+  
+  /* open connection in the database*/
+  connection.ConnectionString = connectionString;
+  connection.Open();
+  
+  var myCountry, seq;
+  var recordset = connection.Execute("select * from tb_countries");
+  seq = 0;
+  while (!recordset.EOF) {
+    seq = seq+1;
+    myCountry = new page.exports.Country();
+    myCountry.Title = recordset.Fields("name").value;
+    myCountry.Code = recordset.Fields("code").value;
+    myCountry.Currencies = recordset.Fields("currency").value;
+    myCountry.Capital = recordset.Fields("capital").value;
+    myCountry.Population = recordset.Fields("population").value;
+    countries.Add(seq, myCountry);
+    recordset.MoveNext();
+  }
+  connection.Close();
+%>
+
+<%
+  /* --------------------------------------------------------
+                       HTML PART 
+     --------------------------------------------------------*/
+%>
+<%~ includeFile('./layouts/header', it) %>
+  <h1 class="uk-title">Database Read </h1>
+  <h3 class="uk-title">List of Countries </h3>
+  <table class="uk-table uk-table-divider">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Code</th>
+        <th>Capital</th>
+        <th>Currency</th>
+        <th>Population</th>
+      </tr>
+    </thead>
+    <tbody>
+      <%
+         debugger;
+         for(var item of countries.Items()) { 
+      %> 
+      <tr>
+        <td><%= item.Title %></td>
+        <td><%= item.Code %></td>
+        <td><%= item.Capital %></td>
+        <td><%= item.Currencies %></td>
+        <td><%= item.Population %></td>
+      </tr>
+      <% } %>
+    </tbody>
+  </table>
+<%~ includeFile('./layouts/footer', it) %>

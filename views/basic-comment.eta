@@ -1,0 +1,9 @@
+<%~ includeFile('./layouts/header', it) %>
+
+<h1>Comment</h1>
+<%
+  // this is single line comment
+  // cannot comment multiline
+
+%>
+<%~ includeFile('./layouts/footer', it) %>

@@ -1,0 +1,26 @@
+<%~ includeFile('./layouts/header', it) %>
+
+<h1>Conditional</h1>
+<%
+debugger;
+var temperature;
+var message;
+var number;
+temperature = 25;
+if (number <15) {
+  message = "<p>Snow will come.</p>";
+}
+else if (number >=15 && number < 25) {
+  message = "<p>Nice wather to have a picnic</p>";
+}
+else if (number >=25 && number < 35) {
+  message = "<p>Summer is coming</p>";
+} else {
+  message = "<p>Woah! It's very hot!</p>";
+}
+
+Response.Write("temperature " + temperature);
+Response.Write(message);
+%>
+
+<%~ includeFile('./layouts/footer', it) %>

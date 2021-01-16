@@ -1,0 +1,20 @@
+<%~ includeFile('./layouts/header', it) %>
+
+<h1>Function</h1>
+<%
+  function sayHello(name) {
+    Response.Write("<p>Hello " + name +"</p>");
+  }
+  
+  // in vbscript we cannot use word "return"
+  // what we have to do is use functionName=  
+ // it's so uncommon, isn't it?
+  function printHello(name) {
+    var printHello = "<p>Hello " + name + "</p>";
+    return printHello;
+  }
+
+  sayHello("Michael");
+  Response.Write(printHello("Michaelsss"));
+%>
+<%~ includeFile('./layouts/footer', it) %>

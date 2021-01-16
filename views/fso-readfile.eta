@@ -1,0 +1,32 @@
+<%~ includeFile('./layouts/header', it) %>
+
+  <h1>Read File</h1>
+
+  <%
+    var fso, file, fileSpec, fileName;
+    var countrySplit;
+
+    fileName = Application["rootURL"] + "/files/countries.txt";
+    fileSpec = Server.MapPath(fileName);
+    
+    /* OpenTextFile has several mode 
+     1 for reading file
+     2 for writing file
+     8 for append file content
+     see : https://msdn.microsoft.com/en-us/library/314cz14s.aspx */
+    fso = CreateObject("Scripting.FileSystemObject");
+    /* FSO I could only make it to work using Western Windows 1252 Encoding */
+    file = fso.OpenTextFile(fileSpec,1);
+
+    Response.Write("Reading file " + fileName + "<br/><br/>");
+    var index = 1;
+    while (!file.AtEndOfStream && index < 300) {
+      
+      countrySplit = Split(file.ReadLine(), ",");
+      Response.Write( countrySplit[0] + ": " + countrySplit[1] + "<br/>");
+      console.log(`country ${countrySplit[0]} ${index++} ${file.AtEndOfStream}`);
+    }
+
+  %>
+<%~ includeFile('./layouts/footer', it) %>
+

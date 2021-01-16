@@ -1,0 +1,57 @@
+<% 
+  class Country {
+    /*Private, class member variable */
+    constructor() {
+        this.p_seq = undefined;
+        this.p_title = undefined;
+        this.p_code = undefined;
+        this.p_currency = undefined;
+        this.p_population = undefined;
+        this.p_capital = undefined;
+   
+      }
+
+    /* getter and setter */
+    get Title() {
+      return this.p_title;
+    }
+    set Title(value) {
+      this.p_title = value;
+    }
+
+    get Code() {
+      return this.p_code;
+    }
+
+    set Code(value) {
+      this.p_code = value;
+    }
+    
+    get Currencies() {
+      return this.p_currency;
+    }
+
+    set Currencies(value) {
+      this.p_currency = value;
+    }
+
+    get Population() {
+      return this.p_population;
+    }
+
+    set Population(value) {
+      this.p_population = value;
+    }
+    
+    get Capital() {
+      return this.p_capital;
+    }
+
+    set Capital(value) {
+      this.p_capital = value;
+    }
+    
+  }
+  
+  page.exports.Country = Country;
+%>

@@ -1,0 +1,47 @@
+<%~ includeFile('./layouts/header', it) %>
+
+<h1>Loops</h1>
+<%
+  var index;
+
+  for( index=0;index<5;index++) {
+    Response.Write("<p>This is my first text<p>");
+  }
+%>
+<hr/>
+<%
+  var index2;
+
+  for( index2=0;index2<5;index2+=2) {
+    Response.Write("<p>This is my second text<p>");
+  }
+%>
+<hr/>
+<%
+  var index3;
+
+  for (index3=0;index3<=5;index3++) {
+    Response.Write("<p>Current text index is " + index3 + "<p>");
+  }
+%>
+<hr/>
+<%
+  var index4;
+  index4 = 0;
+  while (!(index4 === 6)) {
+    Response.Write("<p>Current text index is " + index4 + "<p>");
+    index4 = index4 + 1;
+  }
+%>
+<hr/>
+<%
+  var row, col;
+  for (row=0;row<1;row++) {
+    for (col=0;col<1;col++) {
+      Response.Write("<p>Table row:" + row + " col:" +col + "<p>");
+    }
+  }
+%>
+
+<%~ includeFile('./layouts/footer', it) %>
+

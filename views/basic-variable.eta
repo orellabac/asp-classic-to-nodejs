@@ -1,0 +1,16 @@
+<%~ includeFile('./layouts/header', it) %>
+
+<h1>Comment</h1>
+<%
+  var username;
+  var email;
+  var password;
+  
+  username = "armando";
+  email = "armando@mail.com";
+  Response.Write(username);
+  Response.Write("<br/>");
+  Response.Write(email);
+%>
+
+<%~ includeFile('./layouts/footer', it) %>

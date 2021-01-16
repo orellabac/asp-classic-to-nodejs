@@ -1,0 +1,47 @@
+<%~ includeFile('./layouts/header', it) %>
+
+<h1>Array</h1>
+<%
+  var Split = (x,s) => x.split(s);
+  var lBound = (a) => 0;
+  var uBound = (a) => a.length;
+ 
+  var names, namesSplit;
+  var cars;
+  // Comma separated list
+  names = "Kim,Mook,Jun,Sung";
+  namesSplit = Split(names,",");
+  // array list
+  cars = Array("Kim","Mook","Jun","Sung");
+
+  Response.Write("<h3>Fruits</h3>");
+  Response.Write("<p>"+namesSplit[0]+"</p>");
+  Response.Write("<p>"+namesSplit[1]+"</p>");
+  Response.Write("<p>"+namesSplit[2]+"</p>");
+  Response.Write("<p>"+namesSplit[3]+"</p>");
+  Response.Write("<hr/>");
+  Response.Write("<h3>Cars</h3>");
+  Response.Write("<p>"+cars[0]+"</p>");
+  Response.Write("<p>"+cars[1]+"</p>");
+  Response.Write("<p>"+cars[2]+"</p>");
+  Response.Write("<p>"+cars[3]+"</p>");
+
+
+  // print by array index using loop
+  Response.Write("<hr/>");
+  Response.Write("<h3>Names</h3>");
+  for (i=lBound(namesSplit);i< uBound(namesSplit);i++)
+  {
+    Response.Write("<p>"+namesSplit[i]+"</p>");
+  }
+
+  // print by array index using loop
+  Response.Write("<hr/>");
+  Response.Write("<h3>Cars</h3>");
+  for (i=lBound(cars);i<uBound(cars);i++)
+  {
+    Response.Write("<p>"+cars[i]+"</p>");
+  }
+%>
+<%~ includeFile('./layouts/footer', it) %>
+

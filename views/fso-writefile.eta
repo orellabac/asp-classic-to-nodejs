@@ -1,0 +1,26 @@
+<%~ includeFile('./layouts/header', it) %>
+
+  <h1>Write File</h1>
+
+  <%
+    var fso, file, fileSpec, fileName;
+    var countrySplit;
+
+    fileName = Application["rootURL"] + "/files/cities.txt";
+    fileSpec = Server.MapPath(fileName);
+    
+    /* OpenTextFile has several mode 
+     1 for reading file
+     2 for writing file
+     8 for append file content
+     see : https://msdn.microsoft.com/en-us/library/314cz14s.aspx */
+    fso = CreateObject("Scripting.FileSystemObject");
+    file = fso.OpenTextFile(fileSpec,2);
+
+    Response.Write("Writing file " + fileName + "<br/><br/>");
+
+    file.WriteLine("This is my first sentence. And then second sentence.");
+    file.WriteLine("written at " + new Date());
+  %>
+<%~ includeFile('./layouts/footer', it) %>
+

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<body>
+<%
+function foo() { 
+    Response.Write('a');
+    Response.Write("<b>My first ASP script!2</b>");
+}
+
+
+%>
+Hola como estan
+<%
+foo();
+%>
+</body>
+</html>
